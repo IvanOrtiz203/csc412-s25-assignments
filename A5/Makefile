@@ -9,8 +9,8 @@ ifeq ($(SYSTEM),Darwin)
 LIBS = -lncurses
 FLAGS += -D_XOPEN_SOURCE_EXTENDED
 else
-LIBS = $(shell ncursesw5-config --libs)
-FLAGS += $(shell ncursesw5-config --cflags)
+LIBS = -lncursesw
+FLAGS += -D_XOPEN_SOURCE_EXTENDED #this was changed
 endif
 
 FILES = $(wildcard src/*.c) $(wildcard src/*.h)

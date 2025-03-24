@@ -127,7 +127,15 @@ int main(int argc, char** argv) {
         "   __________/ /    \n"
         "-=:___________/\n");
 
-    // initialize_window(width, height);
+     initialize_window(width, height);
+
+     while(!g_game_over){
+            usleep(100000); //100ms between updates 
+            update(cells, width, height, NULL, INPUT_NONE, 0); //move the snake (nothng yet)
+            render_game(cells, width, height); //draw the board
+     }
+         
+
     // TODO: implement the game loop here (Part 1A)!
-    // end_game(cells, width, height, &snake);
+     end_game(cells, width, height, &snake); //cleans the memory and exits the game
 }
