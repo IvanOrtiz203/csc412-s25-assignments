@@ -81,6 +81,8 @@ enum board_init_status initialize_game(int** cells_p, size_t* width_p,
     g_game_over = 0; //set the gameas active
     g_score = 0;     //set the score to 0
 
+    place_food(*cells_p, *width_p, *height_p); //place the food on the board
+
     return INIT_SUCCESS;
 }
 

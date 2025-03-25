@@ -13,7 +13,8 @@
 #include "render.h"
 
 /** Gets the next input from the user, or returns INPUT_NONE if no input is
- * provided quickly enough.
+ * provided quickly enough. 
+
  */
 enum input_key get_input() {
     /* DO NOT MODIFY THIS FUNCTION */
@@ -129,13 +130,18 @@ int main(int argc, char** argv) {
 
      initialize_window(width, height);
 
+     
+
      while(!g_game_over){
-            usleep(100000); //100ms between updates 
-            update(cells, width, height, NULL, INPUT_NONE, 0); //move the snake (nothng yet)
+            usleep(200000); //150ms between updates (speed)
+            enum input_key input = get_input(); //repalce for input keys 
+            if(input != INPUT_NONE){
+                g_last_input = input;
+            }
+            update(cells, width, height, NULL, g_last_input, 0); //move the snake
             render_game(cells, width, height); //draw the board
      }
-         
 
-    // TODO: implement the game loop here (Part 1A)!
-     end_game(cells, width, height, &snake); //cleans the memory and exits the game
+    // DONE: implement the game loop here (Part 1A)!
+     end_game(cells, width, height, &snake);
 }

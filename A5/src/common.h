@@ -40,6 +40,13 @@ extern int g_score;      // game score: 1 point for every food eaten
 extern char* g_name;
 extern int g_name_len;   
 
+//part 1B decaling Snake Position
+extern int g_snake_row;
+extern int g_snake_col; 
+
+extern enum input_key g_last_input;
+
+
 
 /** Snake struct. This struct is not needed until part 2!
  * Fields:
