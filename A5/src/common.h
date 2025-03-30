@@ -41,8 +41,8 @@ extern char* g_name;
 extern int g_name_len;   
 
 //part 1B decaling Snake Position
-extern int g_snake_row;
-extern int g_snake_col; 
+//extern int g_snake_row; (repaced by snake struct)
+//extern int g_snake_col; 
 
 extern enum input_key g_last_input;
 
@@ -52,9 +52,20 @@ extern enum input_key g_last_input;
  * Fields:
  *  - None yet!
  */
+typedef struct snake_node{
+    int row;
+    int col;
+    struct snake_node* next;
+
+}snake_node_t;
+
+
 typedef struct snake {
-    // TODO: Define your snake struct! (in 2A)
+    // DONE: Define your snake struct! (in 2A)
     // Store any necessary information about your snake here.
+    snake_node_t* head;
+    snake_node_t* tail;
+    size_t length;
 } snake_t;
 
 void set_seed(unsigned seed);

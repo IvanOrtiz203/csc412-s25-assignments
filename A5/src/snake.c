@@ -120,6 +120,28 @@ int main(int argc, char** argv) {
 
     // TODO: Remove this message, uncomment the code below this message
     //       and implement Part 1A here.
+
+if (status != INIT_SUCCESS) {
+    switch (status) {
+        case INIT_ERR_INCORRECT_DIMENSIONS:
+            fprintf(stderr, "Error: Board dimensions do not match the compressed string.\n");
+            break;
+        case INIT_ERR_WRONG_SNAKE_NUM:
+            fprintf(stderr, "Error: Board must contain exactly one snake cell.\n");
+            break;
+        case INIT_ERR_BAD_CHAR:
+            fprintf(stderr, "Error: Compressed board string contains an invalid character.\n");
+            break;
+        default:
+            fprintf(stderr, "Error: Unknown board initialization error.\n");
+    }
+    return EXIT_FAILURE;
+}
+
+
+
+
+
     printf(
         "             ____   \n"
         "Hello       / . .\\ \n"
@@ -138,10 +160,10 @@ int main(int argc, char** argv) {
             if(input != INPUT_NONE){
                 g_last_input = input;
             }
-            update(cells, width, height, NULL, g_last_input, 0); //move the snake
+            update(cells, width, height, &snake, g_last_input, snake_grows); //snake update
             render_game(cells, width, height); //draw the board
      }
 
     // DONE: implement the game loop here (Part 1A)!
-     end_game(cells, width, height, &snake);
+    end_game(cells, width, height, &snake);
 }

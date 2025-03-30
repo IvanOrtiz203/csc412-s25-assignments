@@ -3,8 +3,8 @@
 #include <stdlib.h>
 
 // DONE define global variables needed for your snake! (part 1A)
-int g_snake_row = 2;
-int g_snake_col = 2;
+//int g_snake_row = 2;
+//int g_snake_col = 2; // make way for the snakes linked list body (using snake t)
 
 // Definition of global variables for game status.
 int g_game_over;

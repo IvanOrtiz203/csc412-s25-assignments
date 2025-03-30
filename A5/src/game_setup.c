@@ -70,21 +70,53 @@ enum board_init_status initialize_default_board(int** cells_p, size_t* width_p,
  * default board.
  */
 enum board_init_status initialize_game(int** cells_p, size_t* width_p,
-                                       size_t* height_p, snake_t* snake_p,
-                                       char* board_rep) {
-    // TODO: implement!
-    enum board_init_status status = initialize_default_board(cells_p, width_p, height_p);
-    if(status != INIT_SUCCESS){
-        return status;
-    }
+    size_t* height_p, snake_t* snake_p,
+    char* board_rep) {
+enum board_init_status status;
 
-    g_game_over = 0; //set the gameas active
-    g_score = 0;     //set the score to 0
+if (board_rep != NULL) {
+// If a custom board is provided, decompress it — this also sets the snake node
+status = decompress_board_str(cells_p, width_p, height_p, snake_p, board_rep);
+} else {
+// Otherwise, use the default board and manually set the snake
+status = initialize_default_board(cells_p, width_p, height_p);
 
-    place_food(*cells_p, *width_p, *height_p); //place the food on the board
-
-    return INIT_SUCCESS;
+if (status != INIT_SUCCESS) {
+return status;
 }
+
+// Allocate and initialize the snake's head node
+snake_node_t* node = malloc(sizeof(snake_node_t));
+if (node == NULL) {
+return INIT_ERR_INCORRECT_DIMENSIONS;  // fallback for memory alloc failure
+}
+
+node->row = 2;
+node->col = 2;
+node->next = NULL;
+
+snake_p->head = node;
+snake_p->tail = node;
+snake_p->length = 1;
+
+// Place the snake on the board
+int index = node->row * (*width_p) + node->col;
+(*cells_p)[index] = FLAG_SNAKE;
+}
+
+// Only proceed if board setup was successful
+if (status != INIT_SUCCESS) {
+return status;
+}
+
+g_game_over = 0;
+g_score = 0;
+
+place_food(*cells_p, *width_p, *height_p);
+
+return INIT_SUCCESS;
+}
+
 
 /** Takes in a string `compressed` and initializes values pointed to by
  * cells_p, width_p, and height_p accordingly. Arguments:
@@ -102,6 +134,134 @@ enum board_init_status initialize_game(int** cells_p, size_t* width_p,
 enum board_init_status decompress_board_str(int** cells_p, size_t* width_p,
                                             size_t* height_p, snake_t* snake_p,
                                             char* compressed) {
+
+
+if (!compressed || compressed[0] != 'B') {
+    return INIT_ERR_BAD_CHAR;
+}
+
+//step one height and width form the string 
+int height = 0, width = 0;
+char* rest = NULL;
+
+if(height <= 0 || width <= 0){
+    free(rest);
+    return INIT_ERR_INCORRECT_DIMENSIONS;
+}
+
+*height_p = height;
+*width_p = width;
+
+//step two: allocate board memory 
+
+int total_cells = height * width;
+int* board = malloc(total_cells * sizeof(int));
+if(!board){
+    free(rest);
+    return INIT_ERR_INCORRECT_DIMENSIONS;
+}
+
+//clear the board
+for(int i = 0; i < total_cells; i++){
+    board[i] = FLAG_PLAIN_CELL;
+}
+
+// Step 3: Decompress board rows
+int current_cell = 0;
+int snake_count = 0;
+
+char* row_str = strtok(rest, "|");
+int row_count = 0;
+
+while (row_str && row_count < height) {
+    char* ptr = row_str;
+
+    while (*ptr != '\0') {
+        char cell_type = *ptr++;
+
+        if (cell_type != 'E' && cell_type != 'W' && cell_type != 'S') {
+            free(rest);
+            free(board);
+            return INIT_ERR_BAD_CHAR;
+        }
+
+        // Read number
+        int count = 0;
+        while (*ptr >= '0' && *ptr <= '9') {
+            count = count * 10 + (*ptr - '0');
+            ptr++;
+        }
+
+        if (count <= 0) {
+            free(rest);
+            free(board);
+            return INIT_ERR_INCORRECT_DIMENSIONS;
+        }
+
+        for (int i = 0; i < count; i++) {
+            if (current_cell >= total_cells) {
+                free(rest);
+                free(board);
+                return INIT_ERR_INCORRECT_DIMENSIONS;
+            }
+
+            if (cell_type == 'E') {
+                board[current_cell++] = FLAG_PLAIN_CELL;
+            } else if (cell_type == 'W') {
+                board[current_cell++] = FLAG_WALL;
+            } else if (cell_type == 'S') {
+                if (snake_count >= 1) {
+                    free(rest);
+                    free(board);
+                    return INIT_ERR_WRONG_SNAKE_NUM;
+                }
+
+                board[current_cell++] = FLAG_SNAKE;
+                 // Calculate row and col
+    int snake_row = row_count;
+    int snake_col = current_cell % width;
+
+    // Allocate and assign snake node
+    snake_node_t* node = malloc(sizeof(snake_node_t));
+    if (!node) {
+        free(rest);
+        free(board);
+        return INIT_ERR_INCORRECT_DIMENSIONS;
+    }
+
+    node->row = snake_row;
+    node->col = snake_col;
+    node->next = NULL;
+
+    // Set snake pointers
+    snake_p->head = node;
+    snake_p->tail = node;
+    snake_p->length = 1;
+
+    snake_count++;
+    current_cell++;
+            }
+        }
+    }
+
+    row_str = strtok(NULL, "|");
+    row_count++;
+
+}
+
+free(rest);
+
+if (row_count != height || current_cell != total_cells) {
+    free(board);
+    return INIT_ERR_INCORRECT_DIMENSIONS;
+}
+
+if (snake_count != 1) {
+    free(board);
+    return INIT_ERR_WRONG_SNAKE_NUM;
+}
+
+*cells_p = board;
     // TODO: implement!
-    return INIT_UNIMPLEMENTED;
+return INIT_SUCCESS;
 }// custom helper functions for loading diffrent bords (come back to this)
