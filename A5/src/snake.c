@@ -40,23 +40,20 @@ enum input_key get_input() {
  * `snake_p` is not needed until Part 2!
  */
 void end_game(int* cells, size_t width, size_t height, snake_t* snake_p) {
-    // Game over!
-
-    // Free any memory we've taken
-    teardown(cells, snake_p);
-
-    // ****************** UNCOMMENT THIS CODE IN PART 2B ***********************
-    /*
-    // Render final GAME OVER PRESS ANY KEY TO EXIT screen
+    // Render final GAME OVER screen
     render_game_over(width, height);
-    usleep(1000 * 1000);  // 1000ms
+    usleep(1000 * 1000);  // Pause for 1 second
+
     cbreak(); // Leave halfdelay mode
-    getch();
-    */
+    getch();  // Wait for a key press
 
     // tell ncurses that we're done
     endwin();
+
+    // Now free memory
+    teardown(cells, snake_p);
 }
+
 
 int main(int argc, char** argv) {
     // Main program function — this is what gets called when you run the
@@ -108,17 +105,17 @@ int main(int argc, char** argv) {
     // ----------- DO NOT MODIFY ANYTHING IN `main` ABOVE THIS LINE -----------
 
     // Check validity of the board before rendering!
-    // TODO: Implement (in Part 1C)
+    // DONE: Implement (in Part 1C)
     // if ( ? board is not valid ? ) { return EXIT_FAILURE; }
 
     // Read in the player's name & save its name and length
     // TODO: Implement (in Part 2B)
-    // char name_buffer[1000];
-    // read_name(name_buffer);
-    // ? save name_buffer ?
+     char name_buffer[1000];
+     read_name(name_buffer); //reads user inputs and stores their name
+    //? save name_buffer ?
     // ? save mbslen(name_buffer) ?
 
-    // TODO: Remove this message, uncomment the code below this message
+    // DONE: Remove this message, uncomment the code below this message
     //       and implement Part 1A here.
 
 if (status != INIT_SUCCESS) {
